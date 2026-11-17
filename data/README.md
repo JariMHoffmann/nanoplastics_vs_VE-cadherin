@@ -17,7 +17,7 @@ columns. Times are in ps.
 | `no_plastic`        | VE-cadherin + Ca²⁺, no nanoplastic         |
 | `PS10`, `PS20`, `PS40` | VE-cadherin + Ca²⁺ + polystyrene chain of 10 / 20 / 40 monomers |
 | `no_plastic_no_ca`  | VE-cadherin, no nanoplastic, no Ca²⁺       |
-| `2D_BUQ/PS<N>`      | VE-cadherin + Ca²⁺ + polystyrene chain of N monomers |
+| `2D_BO/PS<N>`       | VE-cadherin + Ca²⁺ + polystyrene chain of N monomers |
 
 ## Layout
 
@@ -36,9 +36,9 @@ data/
 │           ├── plumed_0-50ns.dat
 │           ├── COLVAR_50-75ns      25 ns extension of that run
 │           └── plumed_50-75ns.dat
-└── 2D_BUQ/PS<N>/
+└── 2D_BO/PS<N>/
     ├── setup/
-    └── <cv>/                       windows chosen by 2D Bayesian quadrature
+    └── <cv>/                       windows chosen by 2D Bayesian optimisation
         ├── COLVAR
         └── plumed.dat
 ```
@@ -78,7 +78,7 @@ Each file is stored only once.
 1. `box.gro` → solvation and ions → energy minimisation (`em.mdp`, `emw.mdp`) →
    position-restrained equilibration (`posre.mdp`) → unrestrained equilibration
    (`md.mdp`).
-2. **Umbrella windows (grid and BUQ).** The windows continue from the end of `md` and
+2. **Umbrella windows (grid, 1D BUQ and 2D BO).** The windows continue from the end of `md` and
    have no mdp file of their own. Their `.tpr` is the md `.tpr` extended with
    `gmx convert-tpr -extend`. Each window then runs `mdrun` with its own `plumed.dat`.
 3. **PS10 re-equilibration.** The PS10 equilibration was rerun from the same md `.tpr`.
@@ -119,9 +119,10 @@ output structures are not included.
   setup (50 + 25 ns). In the free-energy profile built from 1D BUQ + grid windows, it
   replaces `no_plastic/3.1`. In the grid-only profile, `no_plastic/3.1` is used.
 
-### 2D BUQ windows: `2D_BUQ/PS<N>/<cv>/`
+### 2D BO windows: `2D_BO/PS<N>/<cv>/`
 
-- Windows chosen in the two-dimensional space of plastic length N and COM distance.
+- Windows chosen by Bayesian optimisation in the two-dimensional space of plastic
+  length N and COM distance.
 - Each run is 50 ns, with times running from 100 to 150 ns. It starts with a steered
   pull from 1.6 nm to the window centre at a constant 0.35 nm/ns, so the pull takes
   longer for larger centres: 2.0 ns for 2.30 nm, 11.2 ns for 5.52 nm. The rest is
@@ -148,7 +149,7 @@ These input files exist but could not be copied yet. They will be added later.
 
 | Missing                                         | Systems                                  |
 |-------------------------------------------------|------------------------------------------|
-| `setup/topol.top`                               | all: `no_plastic`, `no_plastic_no_ca`, `PS10`, `PS20`, `PS40` and all 21 `2D_BUQ/PS<N>` |
+| `setup/topol.top`                               | all: `no_plastic`, `no_plastic_no_ca`, `PS10`, `PS20`, `PS40` and all 21 `2D_BO/PS<N>` |
 | `setup/em.mdp`, `emw.mdp`, `posre.mdp`, `md.mdp` | all except `no_plastic_no_ca`            |
 | `<cv>/plumed.dat` of the grid windows           | `no_plastic` (all 11 windows)            |
 
