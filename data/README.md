@@ -23,7 +23,7 @@ columns. Times are in ps.
 
 ```
 data/
-├── common_setup/                   topology files shared by several systems
+├── common_setup/                   setup files shared by several systems
 ├── <system>/
 │   ├── setup/                      system-specific setup files
 │   ├── <cv>/                       grid windows 1.6, 2.1, ..., 6.6 nm
@@ -44,7 +44,6 @@ data/
 ```
 
 `<cv>` is the umbrella centre in nm.
-Files listed under [Missing files](#missing-files) are not included yet.
 
 ## Simulation setup files
 
@@ -57,10 +56,10 @@ Each file is stored only once.
   - the protein chain topologies and position restraints
     (`topol_Protein_chain_{A,B}.itp`, `posre_Protein_chain_{A,B}.itp`),
   - the topologies and position restraints of the Ca²⁺ ions
-    (`topol_Ion_chain_{C,D}.itp`, `posre_Ion_chain_{C,D}.itp`).
+    (`topol_Ion_chain_{C,D}.itp`, `posre_Ion_chain_{C,D}.itp`),
+  - the mdp files of the setup stages (`em.mdp`, `emw.mdp`, `posre.mdp`, `md.mdp`).
 - **`<system>/setup/`** holds what is specific to one system:
   - `topol.top`,
-  - the mdp files of the setup stages (`em.mdp`, `emw.mdp`, `posre.mdp`, `md.mdp`),
   - the start structure `box.gro` (protein, Ca²⁺ and plastic, before solvation),
   - the plastic topology (`plastic.itp`; `ps20.itp` for PS20),
   - any shared file that is different for this system.
@@ -68,6 +67,9 @@ Each file is stored only once.
   and `common_setup/`, the one in `<system>/setup/` is the version for that system.
   - `no_plastic` has its own Ca²⁺ ion files (3 Ca²⁺ per ion chain instead of 2).
   - `no_plastic_no_ca` has its own protein topologies and no ion files.
+  - Own mdp files: `no_plastic` and `no_plastic_no_ca` all four; `PS20` `emw.mdp`
+    and `md.mdp`; `PS10` `md.mdp`. All other systems use the four mdp files in
+    `common_setup/`.
 - **Running `grompp`.** The `topol.top` files include their itp files by name, as in
   the original simulation folder. To run `grompp`, copy the system's `setup/` files
   and the `common_setup/` files into one folder, or add the folders to the include
@@ -142,16 +144,3 @@ output structures are not included.
 | PS16 4.75 | plastic moves away           |
 | PS17 3.28 | negative mean force          |
 | PS31 5.20 | chain unfolding              |
-
-## Missing files
-
-These input files exist but could not be copied yet. They will be added later.
-
-| Missing                                         | Systems                                  |
-|-------------------------------------------------|------------------------------------------|
-| `setup/topol.top`                               | all: `no_plastic`, `no_plastic_no_ca`, `PS10`, `PS20`, `PS40` and all 21 `2D_BO/PS<N>` |
-| `setup/em.mdp`, `emw.mdp`, `posre.mdp`, `md.mdp` | all except `no_plastic_no_ca`            |
-| `<cv>/plumed.dat` of the grid windows           | `no_plastic` (all 11 windows)            |
-
-The 1D BUQ extensions are complete: their `topol.top` and `extension.mdp` are in
-`1D_BUQ/extension_setup/`.
